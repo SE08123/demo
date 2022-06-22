@@ -1,0 +1,53 @@
+ !pip3 install telepot
+ import pandas as pd
+import numpy as np
+import datetime
+import time
+import telepot
+from datetime import datetime as dt
+
+import pymongo
+from pymongo import MongoClient
+
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+dt = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+dt
+
+import json
+
+link = 'https://yeyak.seoul.go.kr/web/reservation/selectListReservSvcAjax.do?areacode=SE04&clcode=T108'
+
+
+data = requests.get(link).text
+data = json.loads(data)
+
+data
+
+
+#print('json_data=>>>>>', d2)
+
+#token ='1115588762:AAGImuyRkCJvc0ZCpDmw9-CcqsHANl_W2MA'
+token ='5523940099:AAESQ_HHZMnWadmfLFwSqYQu6LJUjj2tRA4'
+bot = telepot.Bot(token=token)
+
+req = requests.get('https://yeyak.seoul.go.kr/web/reservation/selectListReservSvcAjax.do?areacode=SE04&clcode=T108',verify=False)
+json_data = req.json()['resultList']
+
+json_data
+
+df = pd.DataFrame(json_data)
+df = pd.DataFrame(df[["SVC_ID", "SVC_NM"]])
+
+#df.head()
+df
+
+for text in df['SVC_NM']:
+    print(text)
+    if text.find("주말") != -1:
+      print("OK~~~~")
+      #bot.sendMessage(chat_id='150214718', text=text)
+      bot.sendMessage(chat_id='1632839541', text=text)
